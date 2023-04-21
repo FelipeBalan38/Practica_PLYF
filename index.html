@@ -1,0 +1,80 @@
+<!-- https://erfanpaslar.ir/crack/ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>rack it</title>
+  </head>
+
+  <body>
+    <button class="help" onclick="openHelp()">?</button>
+    <h1 class="" id="h1">¿Puedes adivinarlo?</h1>
+
+    <main class="theContainer" id="mainContainer"></main>
+
+    <div class="someSpace"></div>
+    <div class="beforeContainer">
+      <div class="inputsContainer">
+        <span class="entered" id="entered"></span>
+        <span class="guessed" id="guessed">Intentos: 0</span>
+        <span class="" id="message">Tu puedes!!!.</span>
+        <button class="inputs" onclick="clicked(this)">0</button>
+        <button class="inputs" onclick="clicked(this)">1</button>
+        <button class="inputs" onclick="clicked(this)">2</button>
+        <button class="inputs" onclick="clicked(this)">3</button>
+        <button class="inputs" onclick="clicked(this)">4</button>
+        <button class="inputs" onclick="clicked(this)">5</button>
+        <button class="inputs" onclick="clicked(this)">6</button>
+        <button class="inputs" onclick="clicked(this)">7</button>
+        <button class="inputs" onclick="clicked(this)">8</button>
+        <button class="inputs" onclick="clicked(this)">9</button>
+        <button class="inputs" onclick="clicked(this,1)">c</button>
+      </div>
+    </div>
+    <div class="helpContainer hidden" id="helpContainer">
+      <h1 class="">¿Qué es el juego?!</h1>
+      <div class="inputAndBtn">
+        <input
+          class="inputDigit"
+          id="inputDigit"
+          type="number"
+          min="2"
+          max="10"
+          value="4"
+        />
+        <input
+          class="btnDigits"
+          type="button"
+          onclick="modifyDigits()"
+          value="Rst"
+        />
+      </div>
+      <span class="x" onclick="closeHelp()">X</span>
+      <p>
+        Las reglas son simples, colocas una cifra y el programa te dará pistas ○ / ● dependiendo de los dígitos que se encuentren la cifra pero no en su posición o correctamente en su posición respectivamente.
+      </p>
+      <p>
+        Por ejemplo, digamos que el número es 12345, and you ingresas 54321. Así que todos los números están en la cifra pero ninguno en su posición (○○○○○)
+      </p>
+      <p>
+        Luego, si ingresas 16354, solo cuatro dígitos están en la cifra, pero solo dos están en su posición(●●○○)
+      </p>
+      <p>
+        Si ingresas 98760, entonces ninguno de los números está en la cifra y claro ninguno en su lugar, no se mostrará nada
+      </p>
+      <p>
+        Simplemente, cada círculo (●○) representa que los números están en la cifra, cada círculo vacío(○) indica que hay un número desordenado y los círculos llenos (●) representan un número en su posición correcta.
+      </p>
+      <p>
+        Recuerda que las pistas no dicen nada acerca del orden, así que revisa los intentos previos. 
+      </p>
+      <p>Diviértete :)</p>
+      <p>HECHO POR MÍ.</p>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
