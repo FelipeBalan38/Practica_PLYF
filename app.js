@@ -1,10 +1,22 @@
-//
-String.prototype.count = function (c) {
+/* MODIFICAIONES:
+1. HTML: Al inicio del juego el usuario elige el numero de digitos.
+2. Funcion count vuelta pura.
+
+
+*/
+//Cambio de count a funcion pura, para encontrar numeros repetidos.
+const count = (number) => {
+  let prueba;
+  const arr1 = number.split("");
+  new Set(arr1).size < arr1.length ? prueba=-1 : prueba=2
+  return prueba;
+}
+/* String.prototype.count = function (c) {
   var result = 0,
     i = 0;
   for (i; i < this.length; i++) if (this[i] == c) result++;
   return result;
-};
+}; */
 // Se eliminaron algunas variables globales
 let WON = false;
 let THE_NUMBER = 0;
@@ -18,9 +30,8 @@ const obj = {WON,THE_NUMBER,DIGITS,GUESSED,FREE_PLAY,LEFT};
 const generateANumber = digits => {
     let i = 0;
     let returnNumber = "";
-
     while (i < digits) {
-      let num = Math.floor(Math.random() * 10).toString();
+      let num = Math.floor(Math.random() * 10).toString();//Hacer funcion unica porque se repite en la linea 139
       (returnNumber.includes(num)) ?i -= 1 :returnNumber += num;
       i += 1;
     }
@@ -28,38 +39,47 @@ const generateANumber = digits => {
     return returnNumber;
 }
 //Determina si el userGuess tiene el mismo numero de dígitos
+//Modificacion de esta funcion, usando el nuevo count y volviendolo más legible
 const getUserGuess = digits => userGuess => {
+  if(count(userGuess) === -1) return -1;
+  let result;
+  userGuess.length == digits ? result=userGuess : result=-2;
+  return result;
+}
+/* function getUserGuess(digits, userGuess, repeated = REPEATED_DIGITS) {
+  if (!repeated) {
     for (let i = 0; i < 10; i++) {
-      if (userGuess.count(i.toString()) > 1) return -1;
+      if (userGuess.count(i.toString()) > 1) {
+        return -1; // ! repeated digits error
+      }
     }
+  }
+  // else{
+  //   todo ...}
 
   if (userGuess.length == digits) {
     return userGuess;
   } else {
-    return -2;
+    // print("WTF ?!")
+    return -2; // ! length error
   }
-}
+} */
 //Comprueba si los numeros coinciden y determina si se ha ganado
+//Usando operadores ternarios se dejó más sencilla la función
 const checkTheNumber = theNumber => userGuess => {
   let isIn = 0;
   let isIt = 0;
-  if (theNumber == userGuess) {
-    return [obj.DIGITS, obj.DIGITS, true];
-  }//Se ha ganado
+  let result;
+
+  if(theNumber === userGuess) return [obj.DIGITS, obj.DIGITS, true];
 
   for (let i = 0; i < obj.DIGITS; i++) {
-    if (theNumber.includes(userGuess[i])) {
-      isIn += 1;
-    }
-    if (userGuess[i] == theNumber[i]) {
-      isIt += 1;
-    }
-  }//Aún no se ha ganado
-  if (isIn == 0 && isIt == 0) {
-    return [0, 0, false];
-  } else {
-    return [isIn, isIt, false];
+    if (theNumber.includes(userGuess[i])) isIn += 1;
+    if (userGuess[i] == theNumber[i]) isIt += 1;
   }
+
+  (isIn == 0 && isIt == 0) ?result=[0, 0, false] :result=[isIn, isIt, false];
+  return result;
 }
 //Inicialización de las variables globales
 const start = digits => {
@@ -68,6 +88,27 @@ const start = digits => {
 	obj.FREE_PLAY = false;
 	obj.LEFT = obj.DIGITS * 2;
   obj.THE_NUMBER = generateANumber(obj.DIGITS);
+}
+//Numero de veces que se ha intentado adivinar
+const updateGuesses = guesses => {
+  if (guesses > DIGITS * 2) {
+    document.getElementById("guessed").innerHTML = "Free play: " + guesses;
+  } else {
+    document.getElementById("guessed").innerHTML = "intentos: " + guesses;
+  }
+}
+//Función para mostrar mensajes en el juego
+const showMessage = (message, theClass = "") => {
+  if (message == 0) {
+    obj.GUESSED -= 1;
+    obj.LEFT += 1;
+    updateGuesses(obj.GUESSED);
+    document.getElementById("message").innerHTML = "No repetir números.";
+    document.getElementById("message").className = "error";
+  } else {
+    document.getElementById("message").innerHTML = message;
+    document.getElementById("message").className = theClass;
+  }
 }
 //Va revisando los numeros que se ingresan
 const game = userGuess => {
@@ -118,19 +159,6 @@ const gameState = won =>{
     disableInputs();
   }
 }
-//Función para mostrar mensajes en el Juego
-const showMessage = (message, theClass = "") => {
-  if (message == 0) {
-    obj.GUESSED -= 1;
-    obj.LEFT += 1;
-    updateGuesses(obj.GUESSED);
-    document.getElementById("message").innerHTML = "No repetir números.";
-    document.getElementById("message").className = "error";
-  } else {
-    document.getElementById("message").innerHTML = message;
-    document.getElementById("message").className = theClass;
-  }
-}
 //Genera ejemplos segun el numero de digitos
 const makeSomeExamples = digits => examples => {
     for (let i = 0; i < examples; i++) {
@@ -148,14 +176,6 @@ const makeSomeExamples = digits => examples => {
       }
       game(number);
     }
-}
-//Numero de veces que se ha intentado adivinar
-const updateGuesses = guesses => {
-  if (guesses > DIGITS * 2) {
-    document.getElementById("guessed").innerHTML = "Free play: " + guesses;
-  } else {
-    document.getElementById("guessed").innerHTML = "intentos: " + guesses;
-  }
 }
 //Función para desabilitar input una vez ganado
 const disableInputs = (enable = 0) => {
