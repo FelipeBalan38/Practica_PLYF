@@ -33,7 +33,7 @@
         Elige un número entre 2 y 9
       </p>
     </div>
-    <button class="help" onclick="openHelp()">?</button>
+    <button class="help" id="openhelp">?</button>
     <h1 class="" id="h1">¿Puedes adivinarlo?</h1>
 
     <main class="theContainer" id="mainContainer"></main>
@@ -70,12 +70,12 @@
         />
         <input
           class="btnDigits"
+          id="btnInput"
           type="button"
-          onclick="modifyDigits()"
           value="Rst"
         />
       </div>
-      <span class="x" onclick="closeHelp()">X</span>
+      <span class="x" id="closehelp">X</span>
       <p>
         Las reglas son simples, colocas una cifra y el programa te dará pistas ○ / ● dependiendo de los dígitos que se encuentren la cifra pero no en su posición o correctamente en su posición respectivamente.
       </p>
