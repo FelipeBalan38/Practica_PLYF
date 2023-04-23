@@ -200,6 +200,29 @@ body {
   margin: 1rem 3rem;
 }
 
+.startContainer {
+  z-index: 100;
+  position: fixed;
+  font-size: 1rem;
+  top: 4vh;
+  left: 20vw;
+  display: block;
+  margin: auto;
+  width: 50vw;
+  height: 50vh;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.055);
+  box-shadow: 0px 24px 24px #0005;
+  border: 1px solid rgba(225, 225, 225, 0.1);
+  border-radius: 16px;
+  backdrop-filter: blur(10px);
+  /* font-size: var(--fontSize); */
+}
+
+.startContainer p {
+  margin: 1rem 3rem;
+}
+
 .x {
   position: absolute;
   cursor: pointer;
@@ -227,7 +250,7 @@ body {
   display: flex;
 }
 .btnDigits {
-  width: 3rem;
+  width: 4rem;
   /* height: 2rem; */
   padding: 0.5rem;
   background-color: #0002;

@@ -1,22 +1,7 @@
 /* MODIFICAIONES:
 1. HTML: Al inicio del juego el usuario elige el numero de digitos.
 2. Funcion count vuelta pura.
-
-
 */
-//Cambio de count a funcion pura, para encontrar numeros repetidos.
-const count = (number) => {
-  let prueba;
-  const arr1 = number.split("");
-  new Set(arr1).size < arr1.length ? prueba=-1 : prueba=2
-  return prueba;
-}
-/* String.prototype.count = function (c) {
-  var result = 0,
-    i = 0;
-  for (i; i < this.length; i++) if (this[i] == c) result++;
-  return result;
-}; */
 // Se eliminaron algunas variables globales
 let WON = false;
 let THE_NUMBER = 0;
@@ -26,6 +11,17 @@ let FREE_PLAY = false;
 let LEFT = DIGITS * 2;
 //Copia de las variables globales
 const obj = {WON,THE_NUMBER,DIGITS,GUESSED,FREE_PLAY,LEFT};
+//Cambio de count a funcion pura, para encontrar numeros repetidos.
+const count = (number) => {
+  const numbers = number.split("");
+  return (new Set(numbers).size < numbers.length) ?-1 :2;
+}
+/* String.prototype.count = function (c) {
+  var result = 0,
+    i = 0;
+  for (i; i < this.length; i++) if (this[i] == c) result++;
+  return result;
+}; */
 //Genera el número a adivinar
 const generateANumber = digits => {
     let i = 0;
@@ -42,9 +38,7 @@ const generateANumber = digits => {
 //Modificacion de esta funcion, usando el nuevo count y volviendolo más legible
 const getUserGuess = digits => userGuess => {
   if(count(userGuess) === -1) return -1;
-  let result;
-  userGuess.length == digits ? result=userGuess : result=-2;
-  return result;
+  return (userGuess.length == digits) ?userGuess :-2;
 }
 /* function getUserGuess(digits, userGuess, repeated = REPEATED_DIGITS) {
   if (!repeated) {
@@ -67,20 +61,44 @@ const getUserGuess = digits => userGuess => {
 //Comprueba si los numeros coinciden y determina si se ha ganado
 //Usando operadores ternarios se dejó más sencilla la función
 const checkTheNumber = theNumber => userGuess => {
+  let isIn = isInFunc(theNumber)(userGuess);
+  let isIt = isItFunc(theNumber)(userGuess);
+
+  if(theNumber === userGuess) return [isIn, isIt, true];
+  return (isIn == 0 && isIt == 0) ?[0, 0, false] :[isIn, isIt, false];
+}
+//Se crearon dos fucniones puras que retornan el numero de coincidencias (IsInFunc) y el numero de numeros que están en su lugar (IsItFunc).
+const isInFunc = theNumber => userGuess => {
   let isIn = 0;
+  theNumber.split("").forEach(el => {if(userGuess.includes(el)) isIn++});
+  return isIn;
+};
+const isItFunc = theNumber => userGuess => {
   let isIt = 0;
-  let result;
-
-  if(theNumber === userGuess) return [obj.DIGITS, obj.DIGITS, true];
-
-  for (let i = 0; i < obj.DIGITS; i++) {
-    if (theNumber.includes(userGuess[i])) isIn += 1;
-    if (userGuess[i] == theNumber[i]) isIt += 1;
+  theNumber.split("").forEach((el,index) => {if(el === userGuess[index]) isIt++});
+  return isIt;
+} ;
+/* function checkTheNumber(theNumber, userGuess) {
+  let isIn = 0; // * is in
+  let isIt = 0; // * is in right place
+  if (theNumber == userGuess) {
+    return [DIGITS, DIGITS, true];
   }
 
-  (isIn == 0 && isIt == 0) ?result=[0, 0, false] :result=[isIn, isIt, false];
-  return result;
-}
+  for (let i = 0; i < DIGITS; i++) {
+    if (theNumber.includes(userGuess[i])) {
+      isIn += 1;
+    }
+    if (userGuess[i] == theNumber[i]) {
+      isIt += 1;
+    }
+  }
+  if (isIn == 0 && isIt == 0) {
+    return [0, 0, false];
+  } else {
+    return [isIn, isIt, false];
+  }
+} */
 //Inicialización de las variables globales
 const start = digits => {
   obj.DIGITS = digits;
@@ -89,27 +107,29 @@ const start = digits => {
 	obj.LEFT = obj.DIGITS * 2;
   obj.THE_NUMBER = generateANumber(obj.DIGITS);
 }
+//Función para mostrar mensajes en el juego
+//Se hizo parcial y se pide ahora el elemento HTML donde se desea mostra el mensaje
+const showMessage = htmlId => message => theClass => {
+  document.getElementById(htmlId).innerHTML = message;
+  document.getElementById(htmlId).className = theClass;
+}
 //Numero de veces que se ha intentado adivinar
 const updateGuesses = guesses => {
+  //Con asignacion parcial se fija el primer argumento
+  const showGuessed = showMessage("guessed");
   if (guesses > DIGITS * 2) {
-    document.getElementById("guessed").innerHTML = "Free play: " + guesses;
+    showGuessed(`Free play: ${guesses}`)("guessed");
   } else {
-    document.getElementById("guessed").innerHTML = "intentos: " + guesses;
+    showGuessed(`Intentos: ${guesses}`)("guessed");
   }
 }
-//Función para mostrar mensajes en el juego
-const showMessage = (message, theClass = "") => {
-  if (message == 0) {
-    obj.GUESSED -= 1;
-    obj.LEFT += 1;
-    updateGuesses(obj.GUESSED);
-    document.getElementById("message").innerHTML = "No repetir números.";
-    document.getElementById("message").className = "error";
-  } else {
-    document.getElementById("message").innerHTML = message;
-    document.getElementById("message").className = theClass;
-  }
+//Se fija el primer argumento, ya que se usa en varias definiciones
+const message = showMessage("message");
+//Se define mensaje de error
+const showMessageFail = () =>{
+  message("No repetir números.")("error");
 }
+
 //Va revisando los numeros que se ingresan
 const game = userGuess => {
   userGuess = getUserGuess(obj.DIGITS)(userGuess);
@@ -122,9 +142,12 @@ const game = userGuess => {
     circleGuess(isIn)(isIt)(userGuess);
     gameState(obj.WON);
   } else if (parseInt(userGuess) == -1) {
-    showMessage(0);
+    obj.GUESSED -= 1;
+    obj.LEFT += 1;
+    updateGuesses(obj.GUESSED);
+    showMessageFail();
   } else if (parseInt(userGuess) == -2) {
-    showMessage("WTF?!", "error");
+    message("WTF?!")("error");
   }
 }
 //Separado en dos funciones, uno para pintar los circulos
@@ -150,12 +173,12 @@ const circleGuess = isIn => isIt => userGuess => {
 //Función para determinar estado del juego (Ganador,intentos restantes)
 const gameState = won =>{
   if (obj.LEFT > 0) {
-    showMessage(`${obj.LEFT} intentos restantes`, "");
+    message(`${obj.LEFT} intentos restantes`)("");
   } else {
-    showMessage("Free play", "");
+    message("Free play")("");
   }
   if (won) {
-    showMessage("Ganaste", "success");
+    message("Ganaste")("success");
     disableInputs();
   }
 }
@@ -201,18 +224,22 @@ function openHelp() {
 function modifyDigits() {
   let dig = parseInt(document.getElementById("inputDigit").value);
 
-  if (0 < dig && dig < 10) {
     document.getElementById("mainContainer").innerHTML = "";
     start(dig);
     makeSomeExamples(dig)(dig);
     closeHelp();
     disableInputs(1);
     document.getElementById("entered").innerHTML = "";
-  }
 }
-//Comenzar el juego con numeros de 5 digitos
-start(5);
-makeSomeExamples(5)(5);
+//Comenzar el juego con numeros de digitos elegido por el usuario 
+document.addEventListener("click", e => {
+  if(e.target.matches("#start")){
+    let dig = parseInt(document.getElementById("startDigit").value);
+    start(dig);
+    makeSomeExamples(dig)(dig);
+    document.getElementById("startContainer").classList.add("hidden");
+  }
+})
 
 document.addEventListener("keydown", function (event) {
   var pressed = event.key;

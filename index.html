@@ -11,6 +11,28 @@
   </head>
 
   <body>
+    <div class="startContainer" id="startContainer">
+      <h1 class="">Elige un número de digitos para empezar</h1>
+      <div>
+        <input
+          class="inputDigit"
+          id="startDigit"
+          type="number"
+          min="2"
+          max="9"
+          value="5"
+        />
+        <input
+          class="btnDigits"
+          id="start"
+          type="button"
+          value="Aceptar"
+        />
+      </div>
+      <p>
+        Elige un número entre 2 y 9
+      </p>
+    </div>
     <button class="help" onclick="openHelp()">?</button>
     <h1 class="" id="h1">¿Puedes adivinarlo?</h1>
 
@@ -43,7 +65,7 @@
           id="inputDigit"
           type="number"
           min="2"
-          max="10"
+          max="9"
           value="4"
         />
         <input
