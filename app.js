@@ -7,7 +7,8 @@
 6. Se simplificaron varias funciones (p.ej. Mensaje se volvio parcial).
 7. Se eliminó en onclick del HTML(no se consideraba adecuado) y se agreo el event listener adecuado.
 8. Cambios pequeños a varias funciones (eliminacion de algunos for y uso de operadores ternarios para algunos if)
-Entre otras cambios.
+9. Antes al resetear el juego los intentos no se reseteaban, ahora sí
+10. Entre otras cambios.
 */
 // Se eliminaron algunas variables globales
 let WON = false;
