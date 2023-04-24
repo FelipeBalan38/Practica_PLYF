@@ -1,6 +1,13 @@
 /* MODIFICAIONES:
 1. HTML: Al inicio del juego el usuario elige el numero de digitos.
-2. Funcion count vuelta pura.
+2. Setters y Getter de las variables globales
+3. Se volvieron puras varias funciones(count, gerUsserGuess, checkTheNumber).
+4. Se crearon funciones de proposito específico, para volver más entendible el código.
+5. Se dividieron varias funciones para darles solo tareas específicas.
+6. Se simplificaron varias funciones (p.ej. Mensaje se volvio parcial).
+7. Se eliminó en onclick del HTML(no se consideraba adecuado) y se agreo el event listener adecuado.
+8. Cambios pequeños a varias funciones (eliminacion de algunos for y uso de operadores ternarios para algunos if)
+Entre otras cambios.
 */
 // Se eliminaron algunas variables globales
 let WON = false;
@@ -8,6 +15,8 @@ let THE_NUMBER = 0;
 let DIGITS = 5;
 let GUESSED = 0;
 let LEFT = DIGITS * 2;
+/* var FREE_PLAY = false;
+let REPEATED_DIGITS = 0; */
 
 //Copia de las variables globales
 const obj = {WON,THE_NUMBER,DIGITS,GUESSED,LEFT};
@@ -128,7 +137,16 @@ const start = digits => {
   setWon(false);
   setLeft(getDigits()*2);
   setNumber(generateANumber(getDigits()));
+  updateGuesses(0);
 }
+/* function start(digits = 4) {
+  // global WON, THE_NUMBER, DIGITS
+  DIGITS = digits;
+  WON = false;
+	FREE_PLAY = false;
+	LEFT = DIGITS * 2;
+  THE_NUMBER = generateANumber(DIGITS);
+} */
 
 //Función para mostrar mensajes en el juego
 //Se hizo parcial y se pide ahora el elemento HTML donde se desea mostra el mensaje
@@ -136,6 +154,18 @@ const showMessage = htmlId => message => theClass => {
   document.getElementById(htmlId).innerHTML = message;
   document.getElementById(htmlId).className = theClass;
 }
+/* function showMessage(message, theClass = "") {
+  if (message == 0) {
+    GUESSED -= 1;
+    LEFT += 1;
+    updateGuesses(GUESSED);
+    document.getElementById("message").innerHTML = "No repetir números.";
+    document.getElementById("message").className = "error";
+  } else {
+    document.getElementById("message").innerHTML = message;
+    document.getElementById("message").className = theClass;
+  }
+} */
 
 //Numero de veces que se ha intentado adivinar
 const updateGuesses = guesses => {
@@ -145,6 +175,13 @@ const updateGuesses = guesses => {
   ?showGuessed(`Free play: ${guesses}`)("guessed") 
   :showGuessed(`Intentos: ${guesses}`)("guessed");
 }
+/* function updateGuesses(guesses) {
+  if (guesses > DIGITS * 2) {
+    document.getElementById("guessed").innerHTML = "Free play: " + guesses;
+  } else {
+    document.getElementById("guessed").innerHTML = "intentos: " + guesses;
+  }
+} */
 
 //Se fija el primer argumento, ya que se usa en varias definiciones
 const message = showMessage("message");
@@ -162,7 +199,7 @@ const game = userGuess => {
     let isIn = result[0];
     let isIt = result[1];
     setWon(result[2]);
-
+    //Se usan los setters y getters
     circleGuess(isIn)(isIt)(userGuess);
     gameState(getWon());
   } else if (parseInt(userGuess) == -1) {
@@ -187,6 +224,34 @@ const circleGuess = isIn => isIt => userGuess => {
 
   let toAddIsHead = "<span class='state'>";
   let toAddIsTail = "</span>";
+  //Se cambiaron los for por repeats
+    toAddIsHead += "●".repeat(isIt);
+    toAddIsHead += "○".repeat(isIn - isIt);
+  theContainer.innerHTML += toAddHead + toAddIsHead + toAddIsTail + toAddTail;
+}
+
+//Función para determinar estado del juego (Ganador,intentos restantes)
+const gameState = won =>{
+  //Cambiado a operadores ternarios
+  (getLeft() > 0) 
+  ?message(`${getLeft()} intentos restantes`)("") 
+  :message("Free play")("")
+  if (won) {
+    message("Ganaste")("success");
+    disableInputs();
+  }
+}
+/* function gameState(isIn, isIt, won, userGuess) {
+  let theContainer = document.getElementById("mainContainer");
+  let toAddHead = "<div class='row'>";
+  let toAddTail = `</div>`;
+  // let toAddTail = `</div><div class="clear"></div>`;
+  for (let i = 0; i < userGuess.length; i++) {
+    toAddHead += `<span class='circleGuessed'>${userGuess[i]}</span>`;
+  }
+
+  let toAddIsHead = "<span class='state'>";
+  let toAddIsTail = "</span>";
   for (let i = 0; i < isIt; i++) {
     toAddIsHead += "●"; //○●◯⚪⚫⦾⦿⨀⬤
   }
@@ -194,27 +259,47 @@ const circleGuess = isIn => isIt => userGuess => {
     toAddIsHead += "○";
   }
   theContainer.innerHTML += toAddHead + toAddIsHead + toAddIsTail + toAddTail;
-} 
 
-//Función para determinar estado del juego (Ganador,intentos restantes)
-const gameState = won =>{
-  if (getLeft() > 0) {
-    message(`${getLeft()} intentos restantes`)("");
+  if (LEFT > 0) {
+    showMessage(`${LEFT} intentos restantes`, "");
   } else {
-    message("Free play")("");
+    showMessage("Free play", "");
   }
+
   if (won) {
-    message("Ganaste")("success");
+    showMessage("Ganaste", "success");
     disableInputs();
   }
-}
+} */
 
 //Genera ejemplos segun el numero de digitos
 const makeSomeExamples = digits => examples => {
     for (let i = 0; i < examples; i++) {
       game(generateANumber(digits));
-    }
+    }//Hace lo mismo que generar numero, así que se reemplaza por esa función
 }
+/* function makeSomeExamples(digits, examples, repeat = false) {
+  if (!repeat) {
+    for (let i = 0; i < examples; i++) {
+      let number = "";
+      let guessedDigit = 0;
+      let added = [];
+      for (let j = 0; j < digits; j++) {
+        guessedDigit = Math.floor(Math.random() * (10 - 0) + 0);
+        if (!added.includes(guessedDigit)) {
+          added.push(guessedDigit);
+          number += guessedDigit.toString();
+        } else {
+          j--;
+        }
+      }
+      // eel.game(number)();
+      game(number);
+    }
+  } else {
+    // todo
+  }
+} */
 
 //Función para desabilitar input una vez ganado
 const disableInputs = (enable = 0) => {
@@ -253,17 +338,41 @@ const inputValues = input => container => {
 document.addEventListener("click", e => {
   if(e.target.matches("#start")){
     inputValues("startDigit")("startContainer");
-  }
+  }//Iniciar el juego con n digitos
   if(e.target.matches("#openhelp")){
     showContainer("helpContainer");
-  }
+  }//Abrir ventana de ayuda
   if(e.target.matches("#closehelp")){
     hideContainer("helpContainer");
-  }
+  }//Cerrar ventana de ayuda
   if(e.target.matches("#btnInput")){
     inputValues("inputDigit")("helpContainer");   
-  }
+  }//Resetear juego a n dígitos
 });
+/* function closeHelp() {
+  document.getElementById("helpContainer").classList.add("hidden");
+}
+function openHelp() {
+  document.getElementById("helpContainer").classList.remove("hidden");
+}
+function modifyDigits() {
+  let dig = parseInt(document.getElementById("inputDigit").value);
+
+  if (0 < dig && dig < 10) {
+    DIGITS = dig;
+    document.getElementById("mainContainer").innerHTML = "";
+    // eel.start(DIGITS)();
+    start(DIGITS);
+    makeSomeExamples(DIGITS, DIGITS);
+    closeHelp();
+    disableInputs(1);
+    document.getElementById("entered").innerHTML = "";
+  } else {
+    // todo
+  }
+}
+start(DIGITS);
+makeSomeExamples(DIGITS, DIGITS); */
 
 document.addEventListener("keydown", function (event) {
   var pressed = event.key;
@@ -271,43 +380,33 @@ document.addEventListener("keydown", function (event) {
     case "0":
       clicked("0", 0, 1);
       break;
-
     case "1":
       clicked("1", 0, 1);
       break;
-
     case "2":
       clicked("2", 0, 1);
       break;
-
     case "3":
       clicked("3", 0, 1);
       break;
-
     case "4":
       clicked("4", 0, 1);
       break;
-
     case "5":
       clicked("5", 0, 1);
       break;
-
     case "6":
       clicked("6", 0, 1);
       break;
-
     case "7":
       clicked("7", 0, 1);
       break;
-
     case "8":
       clicked("8", 0, 1);
       break;
-
     case "9":
       clicked("9", 0, 1);
       break;
-
     case "c":
       clicked("c", 1, 1);
       break;
